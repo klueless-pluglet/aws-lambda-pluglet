@@ -1,0 +1,70 @@
+environment do
+  root_path '~/dev/ai-plugins'
+end
+
+starter do
+  built_on        :python, type: :gpt_plugin, architecture: :need_to_identify, prefered_patterns: []
+  name            'aws-lambda-pluglet'
+  title           'AWS Lambda GTP Plugin'
+  description     'A pluglet to create AWS Lambda functions and websites from a GPT prompt'
+  user_story      'As a user, I want quickly create a AWS Lambda Function to host code, so that I can stay informed'
+
+  author          'David Cruwys'
+  copyright_date  '2023'
+  inspiration     'https://github.com/banjtheman/chataws'
+
+  description_for_human <<-TEXT
+    Plugin for creating AWS Lambda functions or AWS static websites.
+    
+    Use this tool to create a Lambda function with code provide by use and setup a testing scenario.
+  TEXT
+  
+  description_for_model <<-TEXT
+    You are an AI assistant that can create AWS Lambda functions in supported languages or static websites for calling AWS Lambda functions.
+  
+    You will either generate the required code or take sample code from the user for each new Lambda function.ARGF
+    
+    You will follow best practices when creating code, see: https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html
+    
+    The code will be unit testable.
+
+    Arguments will generally be in one of these formats.
+
+    - queryStringParameters for GET requests
+    - body for POST requests in JSON format
+
+    Output will always be a JSON response with the format {\"statusCode\": 200, \"body\": {...}} unless otherwise specified.
+
+    You select language based on user input, either by asking a question or looking at the code example provided by the user.
+
+    You will create calling code based on user requirement so that the user can via URL, CURL, or AWS console.
+  TEXT
+  
+  repo do
+    user          'klueless-io'
+    organization  'klueless-pluglets'
+    name          app.name
+    description   app.description
+    template      'https://github.com/klueless-templates/chatgpt-plugin'
+  end
+
+  host do
+    platform    :aws_lambda
+  end
+
+  blueprints do
+    template_root 'templates/gpt-plugin'
+
+    blueprint :setup do
+      repo_init
+      commit 'initial application'
+
+      add_klue 'app'
+    end
+  end
+end
+
+commands do
+  starter.apply_blueprints
+end
+

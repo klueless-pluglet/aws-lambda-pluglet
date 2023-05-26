@@ -1,0 +1,59 @@
+code :main do
+  # ----------------------
+  endpoint 'S3'
+  endpoint 'Lambda'
+
+  ## Example Prompts
+
+  # You can test the plugin with some of these prompts:
+
+  # * Use the ChatAWS Plugin to create a Lambda function that generates a random number between a min and a max number input from a user
+  # * Use the ChatAWS Plugin to create a website in that invokes the Lambda Function and displays the random number each time a button is pressed, and lets the user change the min and max values
+  # * Use the ChatAWS Plugin to create a Lambda function that uses the VADER Sentiment Analysis library to perform sentiment analysis on input text
+  # * Use the ChatAWS Plugin to create a website that invokes the sentiment analysis Lambda Function on an input string from a text box.
+
+  prompts do
+    prompt "Create a Lambda function [name]. Code: \n\n [code]"
+    prompt "Create AWS Lambda function [name] in [language] to: [description of function]"
+    prompt "New ASW Lambda in [language] using [dependancies] that [description of function]"
+    prompt "Create website on S3 to invoke Lambda function [name] with [input] and display [output]"
+
+    example "Create a Lambda function in JavaScript that generates a random number between a min and a max number input from a user"
+    example "Create a Lambda function in Python using VADER Sentiment Analysis library to perform sentiment analysis on input text"
+    example "Create a website on S3 that invokes Lambda Function to display random number each time a button is pressed, and let the user change the min and max values"
+
+    exclude 'Does not handle S3 file retrieval'
+    exclude 'Does not delete existing lambda functions'
+  end
+
+  scope: <<-TEXT
+
+  AWS Lambda Pluget provides a Flask-based interface for creating AWS Lambda functions and uploading files to AWS S3.
+
+  Users can interact with the AWS Lambda and S3 services, providing a file for upload or creating a new Lambda function with or without dependencies. It also serves OpenAPI and plugin manifest files.
+  
+  TEXT
+
+  hint "the following REST methods will use Flask to provide a REST API for the application"
+
+  rest upload_to_s3(file)
+  rest create_lambda_function(function_details)
+  rest serve_manifest
+  rest serve_openapi_yaml
+
+  hint "the following functions handle AWS interactions, please write the code"
+
+  function upload_to_s3(file)
+  function create_lambda_function(function_details)
+end
+
+
+run do
+  create :app, code: :main
+  create 'ai-plugin.json'
+  create 'openapi.yaml'
+  create 'Dockerfile'
+  create 'requirements.txt'
+  create 'README.md'
+  deploy :aws_lambda
+end
